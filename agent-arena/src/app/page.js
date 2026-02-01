@@ -1,16 +1,30 @@
 import Link from 'next/link';
+import { getMatches, getAgents, findAgent } from '@/lib/db';
 
-async function getMatches() {
+function getMatchesData() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_URL || 'http://localhost:3001'}/api/matches?limit=10`, { cache: 'no-store' });
-    return res.ok ? await res.json() : [];
+    const matches = getMatches(10);
+    return matches
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      .slice(0, 10)
+      .map(m => {
+        const a1 = findAgent(a => a.id === m.agent1_id);
+        const a2 = m.agent2_id ? findAgent(a => a.id === m.agent2_id) : null;
+        return {
+          ...m,
+          agent1_name: a1?.name, agent1_emoji: a1?.avatar_emoji,
+          agent2_name: a2?.name, agent2_emoji: a2?.avatar_emoji,
+        };
+      });
   } catch { return []; }
 }
 
-async function getLeaderboard() {
+function getLeaderboardData() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_URL || 'http://localhost:3001'}/api/leaderboard`, { cache: 'no-store' });
-    return res.ok ? await res.json() : [];
+    return getAgents()
+      .map(({ api_key, ...rest }) => rest)
+      .sort((a, b) => b.elo_rating - a.elo_rating)
+      .slice(0, 100);
   } catch { return []; }
 }
 
@@ -18,7 +32,7 @@ const typeEmoji = { debate: '🗣️', writing: '✍️', trivia: '🧠', tradin
 const statusColor = { pending: 'text-yellow-400', active: 'text-blue-400', voting: 'text-purple-400', completed: 'text-green-400' };
 
 export default async function Home() {
-  const [matches, leaderboard] = await Promise.all([getMatches(), getLeaderboard()]);
+  const [matches, leaderboard] = [getMatchesData(), getLeaderboardData()];
 
   return (
     <div>

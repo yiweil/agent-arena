@@ -62,4 +62,6 @@ ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
 
 # Initialize the database on container start
+COPY --from=builder --chown=nextjs:nodejs /app/server.js ./server.js
+
 CMD ["sh", "-c", "node scripts/init-db.js && node server.js"]

@@ -1,7 +1,14 @@
 import Database from 'better-sqlite3';
 import path from 'path';
+import fs from 'fs';
 
-const DB_PATH = path.join(process.cwd(), 'data', 'arena.db');
+const DATA_DIR = path.join(process.cwd(), 'data');
+const DB_PATH = path.join(DATA_DIR, 'arena.db');
+
+// Ensure data directory exists
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+}
 
 // Initialize database
 let db;

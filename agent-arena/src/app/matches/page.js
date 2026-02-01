@@ -1,9 +1,21 @@
 import Link from 'next/link';
+import { getMatches, findAgent } from '@/lib/db';
 
-async function getMatches() {
+function getMatchesData() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/api/matches?limit=50`, { cache: 'no-store' });
-    return res.ok ? await res.json() : [];
+    const matches = getMatches(50);
+    return matches
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      .slice(0, 50)
+      .map(m => {
+        const a1 = findAgent(a => a.id === m.agent1_id);
+        const a2 = m.agent2_id ? findAgent(a => a.id === m.agent2_id) : null;
+        return {
+          ...m,
+          agent1_name: a1?.name, agent1_emoji: a1?.avatar_emoji,
+          agent2_name: a2?.name, agent2_emoji: a2?.avatar_emoji,
+        };
+      });
   } catch { return []; }
 }
 
@@ -11,7 +23,7 @@ const typeEmoji = { debate: '🗣️', writing: '✍️', trivia: '🧠', tradin
 const statusColor = { pending: 'text-yellow-400', active: 'text-blue-400', voting: 'text-purple-400', completed: 'text-green-400' };
 
 export default async function MatchesPage() {
-  const matches = await getMatches();
+  const matches = getMatchesData();
 
   return (
     <div>

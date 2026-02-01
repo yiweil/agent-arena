@@ -1,16 +1,19 @@
 import Link from 'next/link';
+import { getAgents } from '@/lib/db';
 
-async function getLeaderboard() {
+function getLeaderboardData() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/api/leaderboard`, { cache: 'no-store' });
-    return res.ok ? await res.json() : [];
+    return getAgents()
+      .map(({ api_key, ...rest }) => rest)
+      .sort((a, b) => b.elo_rating - a.elo_rating)
+      .slice(0, 100);
   } catch { return []; }
 }
 
 const medals = ['🥇', '🥈', '🥉'];
 
 export default async function LeaderboardPage() {
-  const agents = await getLeaderboard();
+  const agents = getLeaderboardData();
 
   return (
     <div>

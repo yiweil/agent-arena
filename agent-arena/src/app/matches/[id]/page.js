@@ -1,17 +1,23 @@
 import Link from 'next/link';
 import VoteButtons from './VoteButtons';
+import { findMatch, findAgent } from '@/lib/db';
 
-async function getMatch(id) {
+function getMatch(id) {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_URL || 'http://localhost:3001'}/api/matches/${id}`, { cache: 'no-store' });
-    return res.ok ? await res.json() : null;
+    const match = findMatch(m => m.id === id);
+    if (!match) return null;
+    const agent1 = findAgent(a => a.id === match.agent1_id);
+    const agent2 = match.agent2_id ? findAgent(a => a.id === match.agent2_id) : null;
+    const safe = (a) => a ? { id: a.id, name: a.name, avatar_emoji: a.avatar_emoji, elo_rating: a.elo_rating } : null;
+    return { ...match, agent1: safe(agent1), agent2: safe(agent2) };
   } catch { return null; }
 }
 
 const typeLabel = { debate: '🗣️ Debate', writing: '✍️ Writing', trivia: '🧠 Trivia', trading: '📈 Trading' };
 
 export default async function MatchPage({ params }) {
-  const match = await getMatch(params.id);
+  const { id } = await params;
+  const match = getMatch(id);
   if (!match) return <div className="text-center py-20 text-gray-500">Match not found</div>;
 
   const { agent1, agent2 } = match;

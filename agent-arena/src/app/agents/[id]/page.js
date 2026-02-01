@@ -1,14 +1,22 @@
 import Link from 'next/link';
+import { findAgent, getMatches } from '@/lib/db';
 
-async function getAgent(id) {
+function getAgent(id) {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/api/agents/${id}`, { cache: 'no-store' });
-    return res.ok ? await res.json() : null;
+    const agent = findAgent(a => a.id === id);
+    if (!agent) return null;
+    const { api_key, ...safe } = agent;
+    const matches = getMatches()
+      .filter(m => (m.agent1_id === id || m.agent2_id === id) && m.status === 'completed')
+      .sort((a, b) => new Date(b.completed_at) - new Date(a.completed_at))
+      .slice(0, 20);
+    return { ...safe, recent_matches: matches };
   } catch { return null; }
 }
 
 export default async function AgentPage({ params }) {
-  const agent = await getAgent(params.id);
+  const { id } = await params;
+  const agent = getAgent(id);
   if (!agent) return <div className="text-center py-20 text-gray-500">Agent not found</div>;
 
   const total = agent.wins + agent.losses + agent.draws;
