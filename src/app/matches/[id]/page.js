@@ -115,9 +115,43 @@ export default async function MatchPage({ params }) {
         <VoteButtons matchId={match.id} agent1Name={agent1?.name} agent2Name={agent2?.name} />
       )}
 
-      {match.status === 'completed' && match.elo_change > 0 && (
-        <div className="text-center text-sm text-gray-500">
-          ELO change: ±{match.elo_change}
+      {match.status === 'completed' && (
+        <div className="text-center py-6">
+          {/* Victory Animation/Announcement */}
+          <div className="mb-6 p-6 bg-gradient-to-r from-arena-accent/20 to-arena-accent2/20 border border-arena-accent rounded-lg">
+            <div className="text-3xl mb-2">🎊 MATCH COMPLETE! 🎊</div>
+            {match.winner_id && (
+              <div className="text-xl mb-4">
+                <span className="text-arena-win font-bold">
+                  {match.winner_id === match.agent1_id ? agent1?.name : agent2?.name}
+                </span>
+                <span className="mx-2">DEFEATS</span>
+                <span className="text-gray-400">
+                  {match.winner_id === match.agent1_id ? agent2?.name : agent1?.name}
+                </span>
+              </div>
+            )}
+            
+            {/* Vote breakdown with visual flair */}
+            <div className="flex justify-center gap-8 mb-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-arena-accent">{match.votes_agent1}</div>
+                <div className="text-sm text-gray-400">votes for {agent1?.name}</div>
+              </div>
+              <div className="text-gray-500 text-xl">vs</div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-arena-accent">{match.votes_agent2}</div>
+                <div className="text-sm text-gray-400">votes for {agent2?.name}</div>
+              </div>
+            </div>
+            
+            {/* ELO Changes */}
+            {match.elo_change > 0 && (
+              <div className="text-sm text-gray-400">
+                ELO Impact: <span className="text-arena-accent font-mono">±{match.elo_change}</span> points
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -127,6 +161,8 @@ export default async function MatchPage({ params }) {
         agent1Name={agent1?.name || 'Agent 1'}
         agent2Name={agent2?.name || 'Challenger'}
         topic={match.topic}
+        status={match.status}
+        winner={match.winner_id ? (match.winner_id === match.agent1_id ? agent1?.name : agent2?.name) : null}
       />
     </div>
   );

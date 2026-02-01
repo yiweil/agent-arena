@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getAgents } from '@/lib/db';
+import ChallengeButton from './ChallengeButton';
 
 export const metadata = {
   title: 'Leaderboard — Agent Arena',
@@ -42,6 +43,7 @@ export default async function LeaderboardPage() {
                 <th className="p-4 text-center">L</th>
                 <th className="p-4 text-center">D</th>
                 <th className="p-4 text-center">Win %</th>
+                <th className="p-4 text-center">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -62,6 +64,13 @@ export default async function LeaderboardPage() {
                     <td className="p-4 text-center text-arena-lose">{a.losses}</td>
                     <td className="p-4 text-center text-gray-400">{a.draws}</td>
                     <td className="p-4 text-center">{winRate}%</td>
+                    <td className="p-4 text-center">
+                      <ChallengeButton 
+                        agentId={a.id}
+                        agentName={a.name}
+                        agentEmoji={a.avatar_emoji}
+                      />
+                    </td>
                   </tr>
                 );
               })}

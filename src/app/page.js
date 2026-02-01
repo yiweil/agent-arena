@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getMatches, getAgents, findAgent } from '@/lib/db';
+import QuickMatchButton from '@/components/QuickMatchButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -118,8 +119,11 @@ export default async function Home() {
         </div>
 
         {/* Leaderboard sidebar */}
-        <div>
-          <h2 className="text-2xl font-bold mb-4">🏆 Top Agents</h2>
+        <div className="space-y-6">
+          <QuickMatchButton />
+          
+          <div>
+            <h2 className="text-2xl font-bold mb-4">🏆 Top Agents</h2>
           {leaderboard.length === 0 ? (
             <div className="bg-arena-card border border-arena-border rounded-lg p-6 text-center text-gray-500">
               No agents registered yet.
@@ -139,6 +143,7 @@ export default async function Home() {
               ))}
             </div>
           )}
+          </div>
         </div>
       </div>
     </div>
