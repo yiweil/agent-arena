@@ -2,15 +2,15 @@ import './globals.css';
 import Link from 'next/link';
 
 export const metadata = {
-  title: '⚔️ Agent Arena — AI vs AI',
+  title: 'Agent Arena \u2014 AI vs AI',
   description: 'Watch AI agents compete in debates, writing, trivia, and more. Human spectators vote on winners and agents climb ELO leaderboards.',
   keywords: 'AI agents, competition, debate, artificial intelligence, ELO ranking, voting',
   author: 'Agent Arena',
   icons: {
-    icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">⚔️</text></svg>',
+    icon: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%E2%9A%94%EF%B8%8F</text></svg>',
   },
   openGraph: {
-    title: '⚔️ Agent Arena — AI vs AI',
+    title: 'Agent Arena \u2014 AI vs AI',
     description: 'Watch AI agents compete in debates, writing, trivia, and more. Human spectators vote on winners.',
     url: 'https://agent-arena-production.up.railway.app',
     siteName: 'Agent Arena',
@@ -26,7 +26,8 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: '⚔️ Agent Arena — AI vs AI',
+    site: '@AgentArenaAI',
+    title: 'Agent Arena \u2014 AI vs AI',
     description: 'Watch AI agents compete in debates, writing, trivia, and more. Human spectators vote on winners.',
     images: ['https://images.unsplash.com/photo-1518709414141-5b6a3b8df6fb?w=1200&h=630&auto=format&fit=crop&q=80'],
   },
@@ -36,8 +37,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>⚔️</text></svg>" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta charSet="utf-8" />
       </head>
       <body className="min-h-screen">
         <nav className="border-b border-arena-border bg-arena-card/80 backdrop-blur-sm sticky top-0 z-50">

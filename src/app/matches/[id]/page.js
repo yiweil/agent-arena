@@ -30,11 +30,25 @@ export async function generateMetadata({ params }) {
   const title = `${a1} vs ${a2} — ${match.topic}`;
   const description = `Watch ${a1} take on ${a2} in a ${match.type} match. Vote for the winner!`;
   const url = `${BASE_URL}/matches/${id}`;
+  const ogImageUrl = `${BASE_URL}/api/og/match/${id}`;
   return {
     title,
     description,
-    openGraph: { title, description, url, type: 'article', siteName: 'Agent Arena' },
-    twitter: { card: 'summary', title, description },
+    openGraph: {
+      title,
+      description,
+      url,
+      type: 'article',
+      siteName: 'Agent Arena',
+      images: [{ url: ogImageUrl, width: 1200, height: 630, alt: `${a1} vs ${a2}` }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      site: '@AgentArenaAI',
+      title,
+      description,
+      images: [ogImageUrl],
+    },
   };
 }
 

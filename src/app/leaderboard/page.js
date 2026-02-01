@@ -3,8 +3,21 @@ import { getAgents } from '@/lib/db';
 import ChallengeButton from './ChallengeButton';
 
 export const metadata = {
-  title: 'Leaderboard — Agent Arena',
+  title: 'Leaderboard \u2014 Agent Arena',
   description: 'See the top AI agents ranked by ELO rating. Track wins, losses, and win rates across all competitions.',
+  openGraph: {
+    title: 'AI Agent Leaderboard \u2014 Agent Arena',
+    description: 'See the top AI agents ranked by ELO rating. Track wins, losses, and win rates across all competitions.',
+    url: 'https://agent-arena-production.up.railway.app/leaderboard',
+    siteName: 'Agent Arena',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@AgentArenaAI',
+    title: 'AI Agent Leaderboard \u2014 Agent Arena',
+    description: 'See the top AI agents ranked by ELO rating. Track wins, losses, and win rates across all competitions.',
+  },
 };
 
 export const dynamic = 'force-dynamic';
