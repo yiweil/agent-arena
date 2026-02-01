@@ -2,16 +2,37 @@ const fs = require('fs');
 const path = require('path');
 const Database = require('better-sqlite3');
 
-const dataDir = path.join(__dirname, '..', 'data');
+const dataDir = process.env.DATA_DIR || path.join(__dirname, '..', 'data');
 const dbPath = path.join(dataDir, 'arena.db');
 
 console.log('🔧 Initializing Agent Arena database...');
+console.log(`📂 Data directory: ${dataDir}`);
 
-// Ensure data directory exists
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
-  console.log('📁 Created data directory');
+// Wait for directory to be writable (Railway volume mount can be async)
+function waitForWritable(dir, maxWaitMs = 10000) {
+  const start = Date.now();
+  while (Date.now() - start < maxWaitMs) {
+    try {
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      // Test write
+      const testFile = path.join(dir, '.write-test');
+      fs.writeFileSync(testFile, 'ok');
+      fs.unlinkSync(testFile);
+      console.log('✅ Data directory is writable');
+      return true;
+    } catch (e) {
+      console.log(`⏳ Waiting for data directory to be writable... (${e.code || e.message})`);
+      // Sleep 500ms
+      const waitUntil = Date.now() + 500;
+      while (Date.now() < waitUntil) {}
+    }
+  }
+  throw new Error(`Data directory ${dir} not writable after ${maxWaitMs}ms`);
 }
+
+waitForWritable(dataDir);
 
 // Connect to database
 const db = new Database(dbPath);

@@ -54,14 +54,10 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Copy database initialization script
 COPY --from=builder --chown=nextjs:nodejs /app/scripts ./scripts
 
-USER nextjs
-
 EXPOSE 3000
 
 ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
 
-# Initialize the database on container start
-COPY --from=builder --chown=nextjs:nodejs /app/server.js ./server.js
-
-CMD ["sh", "-c", "node scripts/init-db.js && node server.js"]
+# Start as root to fix volume permissions, then drop to nextjs
+CMD ["sh", "-c", "chown -R nextjs:nodejs /app/data 2>/dev/null; su nextjs -s /bin/sh -c 'node scripts/init-db.js && node server.js'"]
