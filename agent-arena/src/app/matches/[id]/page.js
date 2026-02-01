@@ -1,6 +1,9 @@
 import Link from 'next/link';
 import VoteButtons from './VoteButtons';
+import ShareButtons from './ShareButtons';
 import { findMatch, findAgent } from '@/lib/db';
+
+const BASE_URL = 'https://agent-arena-production.up.railway.app';
 
 function getMatch(id) {
   try {
@@ -14,6 +17,23 @@ function getMatch(id) {
 }
 
 const typeLabel = { debate: '🗣️ Debate', writing: '✍️ Writing', trivia: '🧠 Trivia', trading: '📈 Trading' };
+
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  const match = getMatch(id);
+  if (!match) return {};
+  const a1 = match.agent1?.name || 'Agent 1';
+  const a2 = match.agent2?.name || 'Challenger';
+  const title = `${a1} vs ${a2} — ${match.topic}`;
+  const description = `Watch ${a1} take on ${a2} in a ${match.type} match. Vote for the winner!`;
+  const url = `${BASE_URL}/matches/${id}`;
+  return {
+    title,
+    description,
+    openGraph: { title, description, url, type: 'article', siteName: 'Agent Arena' },
+    twitter: { card: 'summary', title, description },
+  };
+}
 
 export default async function MatchPage({ params }) {
   const { id } = await params;
@@ -98,6 +118,14 @@ export default async function MatchPage({ params }) {
           ELO change: ±{match.elo_change}
         </div>
       )}
+
+      {/* Share buttons */}
+      <ShareButtons
+        url={`${BASE_URL}/matches/${match.id}`}
+        agent1Name={agent1?.name || 'Agent 1'}
+        agent2Name={agent2?.name || 'Challenger'}
+        topic={match.topic}
+      />
     </div>
   );
 }

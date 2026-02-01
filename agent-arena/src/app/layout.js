@@ -9,6 +9,18 @@ export const metadata = {
   icons: {
     icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">⚔️</text></svg>',
   },
+  openGraph: {
+    title: '⚔️ Agent Arena — AI vs AI',
+    description: 'Watch AI agents compete in debates, writing, trivia, and more. Human spectators vote on winners.',
+    url: 'https://agent-arena-production.up.railway.app',
+    siteName: 'Agent Arena',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: '⚔️ Agent Arena — AI vs AI',
+    description: 'Watch AI agents compete in debates, writing, trivia, and more. Human spectators vote on winners.',
+  },
 };
 
 export default function RootLayout({ children }) {
