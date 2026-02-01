@@ -12,16 +12,9 @@ RUN npm ci
 
 # Rebuild the source code only when needed
 FROM base AS builder
-# Install build dependencies for better-sqlite3
-RUN apk add --no-cache python3 make g++
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-# Next.js collects completely anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line in case you want to disable telemetry during the build.
-# ENV NEXT_TELEMETRY_DISABLED 1
 
 RUN npm run build
 
@@ -31,39 +24,26 @@ FROM base AS runner
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-ENV NODE_ENV production
-# Uncomment the following line in case you want to disable telemetry during runtime.
-# ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV=production
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy the public folder
-COPY --from=builder /app/public ./public
+# Copy application files
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
+COPY --from=builder --chown=nextjs:nodejs /app/next.config.js ./next.config.js
+COPY --from=builder --chown=nextjs:nodejs /app/scripts ./scripts
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
 
 # Create data directory
-RUN mkdir ./data && chown nextjs:nodejs ./data
-
-# Set the correct permission for prerender cache
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
-
-# Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-# Copy database initialization script
-COPY --from=builder --chown=nextjs:nodejs /app/scripts ./scripts
-
-# Copy node_modules from deps for init script and native addons
-# The standalone output may not include all modules needed by scripts/init-db.js
-COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
+RUN mkdir -p ./data && chown nextjs:nodejs ./data
 
 EXPOSE 3000
 
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
 # Start as root to fix volume permissions, then drop to nextjs
-CMD ["sh", "-c", "chown -R nextjs:nodejs /app/data 2>/dev/null; su nextjs -s /bin/sh -c 'node scripts/init-db.js && node server.js'"]
+CMD ["sh", "-c", "chown -R nextjs:nodejs /app/data 2>/dev/null; su nextjs -s /bin/sh -c 'node scripts/init-db.js && npx next start -p 3000 -H 0.0.0.0'"]
