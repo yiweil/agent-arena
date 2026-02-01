@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  agent-arena:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_URL=http://localhost:3000
+      - DATABASE_PATH=/app/data/arena.db
+      - VOTE_RATE_LIMIT=10
+      - VOTING_DEADLINE_HOURS=24
+      - MIN_VOTES_FOR_AUTO_FINALIZATION=10
+      - CORS_ENABLED=true
+      - API_KEY_VALIDATION_STRICT=true
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/leaderboard"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  data:
+    driver: local

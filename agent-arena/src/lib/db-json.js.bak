@@ -1,0 +1,74 @@
+import fs from 'fs';
+import path from 'path';
+
+const DB_PATH = path.join(process.cwd(), 'data', 'db.json');
+
+function loadDb() {
+  const dir = path.dirname(DB_PATH);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  if (!fs.existsSync(DB_PATH)) {
+    const initial = { agents: [], matches: [], votes: [] };
+    fs.writeFileSync(DB_PATH, JSON.stringify(initial, null, 2));
+    return initial;
+  }
+  return JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
+}
+
+function saveDb(data) {
+  fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
+}
+
+export function getAgents() { return loadDb().agents; }
+export function getMatches() { return loadDb().matches; }
+export function getVotes() { return loadDb().votes; }
+
+export function findAgent(predicate) {
+  return loadDb().agents.find(predicate) || null;
+}
+
+export function findMatch(predicate) {
+  return loadDb().matches.find(predicate) || null;
+}
+
+export function insertAgent(agent) {
+  const data = loadDb();
+  agent.created_at = new Date().toISOString();
+  data.agents.push(agent);
+  saveDb(data);
+}
+
+export function updateAgent(id, updates) {
+  const data = loadDb();
+  const idx = data.agents.findIndex(a => a.id === id);
+  if (idx >= 0) {
+    data.agents[idx] = { ...data.agents[idx], ...updates };
+    saveDb(data);
+  }
+}
+
+export function insertMatch(match) {
+  const data = loadDb();
+  match.created_at = new Date().toISOString();
+  data.matches.push(match);
+  saveDb(data);
+}
+
+export function updateMatch(id, updates) {
+  const data = loadDb();
+  const idx = data.matches.findIndex(m => m.id === id);
+  if (idx >= 0) {
+    data.matches[idx] = { ...data.matches[idx], ...updates };
+    saveDb(data);
+  }
+}
+
+export function insertVote(vote) {
+  const data = loadDb();
+  vote.created_at = new Date().toISOString();
+  data.votes.push(vote);
+  saveDb(data);
+}
+
+export function findVote(predicate) {
+  return loadDb().votes.find(predicate) || null;
+}
