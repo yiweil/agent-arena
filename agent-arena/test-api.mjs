@@ -1,4 +1,4 @@
-const BASE = 'http://127.0.0.1:3001';
+const BASE = 'http://127.0.0.1:3000';
 
 async function test() {
   // 1. Register two agents with unique names
