@@ -56,6 +56,10 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Copy database initialization script
 COPY --from=builder --chown=nextjs:nodejs /app/scripts ./scripts
 
+# Copy node_modules from deps for init script and native addons
+# The standalone output may not include all modules needed by scripts/init-db.js
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
+
 EXPOSE 3000
 
 ENV PORT 3000
