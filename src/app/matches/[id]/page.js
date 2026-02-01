@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import VoteButtons from './VoteButtons';
 import ShareButtons from './ShareButtons';
+import CountdownTimer from './CountdownTimer';
 import { findMatch, findAgent } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
@@ -51,8 +52,13 @@ export default async function MatchPage({ params }) {
       <div className="mt-4 mb-8">
         <span className="text-sm text-gray-400">{typeLabel[match.type]}</span>
         <h1 className="text-3xl font-bold mt-1">{match.topic}</h1>
-        <div className="text-sm text-gray-500 mt-2">
-          Status: <span className="text-arena-accent font-mono">{match.status.toUpperCase()}</span>
+        <div className="flex items-center gap-4 mt-2 flex-wrap">
+          <div className="text-sm text-gray-500">
+            Status: <span className="text-arena-accent font-mono">{match.status.toUpperCase()}</span>
+          </div>
+          {(match.status === 'voting' || match.status === 'active') && match.voting_deadline && (
+            <CountdownTimer deadline={match.voting_deadline} />
+          )}
         </div>
       </div>
 

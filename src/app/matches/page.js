@@ -68,6 +68,13 @@ export default async function MatchesPage({ searchParams }) {
                   {m.status === 'voting' && (
                     <div className="text-xs text-gray-500 mt-1">
                       {m.votes_agent1 + m.votes_agent2} votes
+                      {m.voting_deadline && (() => {
+                        const diff = new Date(m.voting_deadline) - Date.now();
+                        if (diff <= 0) return ' · ended';
+                        const h = Math.floor(diff / 3600000);
+                        const d = Math.floor(h / 24);
+                        return ` · ${d > 0 ? `${d}d` : `${h}h`} left`;
+                      })()}
                     </div>
                   )}
                 </div>
