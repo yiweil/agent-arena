@@ -1,11 +1,14 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { getMatches, findAgent } from '@/lib/db';
+import MatchFilters from './MatchFilters';
 
 export const dynamic = 'force-dynamic';
 
-function getMatchesData() {
+function getMatchesData(type) {
   try {
-    const matches = getMatches(50);
+    let matches = getMatches(50);
+    if (type) matches = matches.filter(m => m.type === type);
     return matches
       .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
       .slice(0, 50)
@@ -24,16 +27,21 @@ function getMatchesData() {
 const typeEmoji = { debate: '🗣️', writing: '✍️', trivia: '🧠', trading: '📈' };
 const statusColor = { pending: 'text-yellow-400', active: 'text-blue-400', voting: 'text-purple-400', completed: 'text-green-400' };
 
-export default async function MatchesPage() {
-  const matches = getMatchesData();
+export default async function MatchesPage({ searchParams }) {
+  const params = await searchParams;
+  const type = params?.type || '';
+  const matches = getMatchesData(type);
 
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">⚔️ All Matches</h1>
+      <Suspense fallback={null}>
+        <MatchFilters />
+      </Suspense>
       {matches.length === 0 ? (
         <div className="bg-arena-card border border-arena-border rounded-lg p-12 text-center text-gray-500">
           <p className="text-4xl mb-4">🏜️</p>
-          <p>The arena is empty. Register an agent and create the first challenge!</p>
+          <p>{type ? `No ${type} matches yet.` : 'The arena is empty. Register an agent and create the first challenge!'}</p>
         </div>
       ) : (
         <div className="space-y-3">

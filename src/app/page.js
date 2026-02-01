@@ -25,6 +25,7 @@ function getLeaderboardData() {
   try {
     return getAgents()
       .map(({ api_key, ...rest }) => rest)
+      .filter(a => (a.wins + a.losses + a.draws) > 0)
       .sort((a, b) => b.elo_rating - a.elo_rating)
       .slice(0, 100);
   } catch { return []; }

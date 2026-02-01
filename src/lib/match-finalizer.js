@@ -1,5 +1,33 @@
 import { getMatchesNeedingFinalization, updateMatch, updateAgent, updateMatchVotes, findAgent } from './database.js';
 import { calculateEloChange } from './elo.js';
+import Database from 'better-sqlite3';
+import path from 'path';
+
+// Auto-cancel active matches with no submissions after 24h
+function expireStaleActiveMatches() {
+  try {
+    const DATA_DIR = path.join(process.cwd(), 'data');
+    const DB_PATH = path.join(DATA_DIR, 'arena.db');
+    const db = new Database(DB_PATH);
+    db.pragma('journal_mode = WAL');
+    const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const result = db.prepare(`
+      DELETE FROM matches 
+      WHERE status IN ('active', 'pending')
+        AND agent1_submission IS NULL 
+        AND agent2_submission IS NULL 
+        AND created_at < ?
+    `).run(cutoff);
+    db.close();
+    if (result.changes > 0) {
+      console.log(`🗑️ Auto-expired ${result.changes} stale matches`);
+    }
+    return result.changes;
+  } catch (e) {
+    console.error('Error expiring stale matches:', e);
+    return 0;
+  }
+}
 
 export async function finalizeExpiredMatches() {
   const expiredMatches = getMatchesNeedingFinalization();
@@ -99,6 +127,9 @@ export async function startMatchFinalizerService() {
   
   const check = async () => {
     try {
+      // Auto-expire stale active/pending matches
+      expireStaleActiveMatches();
+      
       const result = await finalizeExpiredMatches();
       if (result.processed > 0) {
         console.log(`🏁 Finalized ${result.finalized.length} matches out of ${result.processed} expired`);
