@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { findAgent, getMatches } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 function getAgent(id) {
   try {
     const agent = findAgent(a => a.id === id);

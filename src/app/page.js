@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { getMatches, getAgents, findAgent } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 function getMatchesData() {
   try {
     const matches = getMatches(10);

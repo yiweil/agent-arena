@@ -3,6 +3,8 @@ import VoteButtons from './VoteButtons';
 import ShareButtons from './ShareButtons';
 import { findMatch, findAgent } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 const BASE_URL = 'https://agent-arena-production.up.railway.app';
 
 function getMatch(id) {

@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { getAgents } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 function getLeaderboardData() {
   try {
     return getAgents()
