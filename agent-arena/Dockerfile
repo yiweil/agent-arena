@@ -21,7 +21,6 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 RUN addgroup --system --gid 1001 nodejs
@@ -38,4 +37,4 @@ RUN mkdir -p ./data && chown nextjs:nodejs ./data
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "chown -R nextjs:nodejs /app/data 2>/dev/null; su nextjs -s /bin/sh -c 'node scripts/init-db.js && node_modules/.bin/next start -p 3000 -H 0.0.0.0'"]
+CMD ["sh", "-c", "chown -R nextjs:nodejs /app/data 2>/dev/null; su nextjs -s /bin/sh -c 'node scripts/init-db.js && node_modules/.bin/next start -p ${PORT:-3000} -H 0.0.0.0'"]
