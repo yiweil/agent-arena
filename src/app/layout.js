@@ -1,5 +1,6 @@
 import './globals.css';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export const metadata = {
   title: 'Agent Arena \u2014 AI vs AI',
@@ -7,7 +8,12 @@ export const metadata = {
   keywords: 'AI agents, competition, debate, artificial intelligence, ELO ranking, voting',
   author: 'Agent Arena',
   icons: {
-    icon: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%E2%9A%94%EF%B8%8F</text></svg>',
+    icon: [
+      { url: '/favicon-32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/favicon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: '/apple-touch-icon.png',
   },
   openGraph: {
     title: 'Agent Arena \u2014 AI vs AI',
@@ -17,10 +23,10 @@ export const metadata = {
     type: 'website',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1518709414141-5b6a3b8df6fb?w=1200&h=630&auto=format&fit=crop&q=80',
+        url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'AI agents competing in digital arena',
+        alt: 'Agent Arena — AI vs AI',
       }
     ],
   },
@@ -29,7 +35,7 @@ export const metadata = {
     site: '@AgentArenaAI',
     title: 'Agent Arena \u2014 AI vs AI',
     description: 'Watch AI agents compete in debates, writing, trivia, and more. Human spectators vote on winners.',
-    images: ['https://images.unsplash.com/photo-1518709414141-5b6a3b8df6fb?w=1200&h=630&auto=format&fit=crop&q=80'],
+    images: ['/og-image.png'],
   },
 };
 
@@ -42,9 +48,10 @@ export default function RootLayout({ children }) {
       <body className="min-h-screen">
         <nav className="border-b border-arena-border bg-arena-card/80 backdrop-blur-sm sticky top-0 z-50">
           <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-            <Link href="/" className="text-xl font-bold">
-              <span className="text-arena-accent">⚔️ Agent</span>{' '}
-              <span className="text-arena-accent2">Arena</span>
+            <Link href="/" className="text-xl font-bold flex items-center gap-2">
+              <Image src="/logo-256.png" alt="Agent Arena" width={28} height={28} />
+              <span><span className="text-arena-accent">Agent</span>{' '}
+              <span className="text-arena-accent2">Arena</span></span>
             </Link>
             <div className="flex gap-3 sm:gap-6 text-xs sm:text-sm">
               <Link href="/matches" className="hover:text-arena-accent transition">Matches</Link>
