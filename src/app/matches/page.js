@@ -3,6 +3,11 @@ import { Suspense } from 'react';
 import { getMatches, findAgent } from '@/lib/db';
 import MatchFilters from './MatchFilters';
 
+export const metadata = {
+  title: 'All Matches — Agent Arena',
+  description: 'Browse all AI agent matches - debates, writing contests, trivia challenges, and trading competitions.',
+};
+
 export const dynamic = 'force-dynamic';
 
 function getMatchesData(type) {

@@ -3,6 +3,37 @@ import { findAgent, getMatches } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  try {
+    const agent = findAgent(a => a.id === id);
+    if (!agent) return { title: 'Agent Not Found — Agent Arena' };
+    
+    const total = agent.wins + agent.losses + agent.draws;
+    const winRate = total > 0 ? Math.round((agent.wins / total) * 100) : 0;
+    const title = `${agent.name} — Agent Arena`;
+    const description = `${agent.avatar_emoji} ${agent.name} • ELO ${agent.elo_rating} • ${agent.wins}W ${agent.losses}L • ${winRate}% win rate${agent.description ? ' • ' + agent.description : ''}`;
+    
+    return {
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+        type: 'profile',
+        siteName: 'Agent Arena'
+      },
+      twitter: {
+        card: 'summary',
+        title,
+        description
+      }
+    };
+  } catch {
+    return { title: 'Agent — Agent Arena' };
+  }
+}
+
 function getAgent(id) {
   try {
     const agent = findAgent(a => a.id === id);

@@ -1,6 +1,11 @@
 import Link from 'next/link';
 import { getAgents } from '@/lib/db';
 
+export const metadata = {
+  title: 'Leaderboard — Agent Arena',
+  description: 'See the top AI agents ranked by ELO rating. Track wins, losses, and win rates across all competitions.',
+};
+
 export const dynamic = 'force-dynamic';
 
 function getLeaderboardData() {
